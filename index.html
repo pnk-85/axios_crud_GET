@@ -1,0 +1,101 @@
+<html>
+    <body>
+        <form onsubmit="SaveToLocalStorage(event)">
+            <label>Name</label>
+            <input type="text" name="usernm" required>
+            <label>Email</label>
+            <input type="email" name="emailId" required>
+            <label>Password</label>
+            <input type="password" name="password" required>
+            <button>submit</button>
+        </form>
+        <ul id="listOfitems"></ul>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+        <script>
+            function SaveToLocalStorage(event) {
+                event.preventDefault();
+                const name = event.target.usernm.value;
+                const email = event.target.emailId.value;
+                const password = event.target.password.value;
+                //localStorage.setItem('Name', name);
+                //localStorage.setItem('email', email);
+                //localStorage.setItem('password', password); 
+                const obj ={
+                    name,
+                    email,
+                    password
+                }
+
+                axios.post("https://crudcrud.com/api/a4026c0cf28546d7b67435dc5fc32f29/appointmentData", obj)
+                .then((respone) =>{
+                    showUserOnScreen(respone.data)
+                    //console.log(respone);
+                })
+                .catch((err) => {
+                    document.body.innerHTML = document.body.innerHTML +"<h4> somthing went wrong</h4>"
+                    console.log(err);
+                })
+
+                //localStorage.setItem(obj.email, JSON.stringify(obj));
+                //showUserOnScreen(obj);
+            }
+
+            window.addEventListener("DOMContentLoaded", () => {
+                axios.get("https://crudcrud.com/api/de09b6f13260496882617b97b8fd2d16/appointmentData")
+                .then((respone) => {
+                    console.log(respone)
+
+                    for(var i=0; i<respone.data.length; i++){
+                        showUserOnScreen(respone.data[i]);
+                    }
+                })
+                .catch((err) => {
+                    console.log(error)
+                })
+                //const localStorageObj = localStorage;
+                //const localStorageKey = Object.keys(localStorage);
+
+                //for( var i=0; i<localStorageKey.length; i++){
+                  //  const key = localStorageKey[i];
+                    //const userDetailsString = localStorageObj[key];
+                    //const userDetailsObj = json.parse(userDetailsString);
+                   // showUserOnScreen(userDetailsObj);
+                //}
+            })
+
+
+            function showUserOnScreen(obj){
+                const parentElem = document.getElementById('listOfitems');
+                const childElem = document.createElement('li');
+                childElem.textContent = obj.name +' '+obj.email + ' ' + obj.password;
+                parentElem.appendChild(childElem);
+               // parentElem.innerHTML =parentElem.innerHTML + '<li>$(obj.name) - $(obj.email) - $(obj.password)</li>'
+
+               const deletButton = document.createElement('input');
+               deletButton.type = 'button';
+               deletButton.value = 'Delet';
+               deletButton.onclick = () => {
+                localStorage.removeItem(obj.email);
+                parentElem.removeChild(childElem);
+               }
+                
+                const editButton = document.createElement('input');
+               editButton.type = 'button';
+              editButton.value = 'edit';
+               editButton.onclick = () => {
+                localStorage.removeItem(obj.email);
+                parentElem.removeChild(childElem);
+                document.getElementById('usernmInputTag').value = obj.name;
+                document.getElementById('emailInputTag').value = obj.email;
+                document.getElementById('passwordInputTag').value = obj.password;
+               }
+               
+               childElem.appendChild(deletButton);
+               childElem.appendChild(editButton);
+               parentElem.appendChild(childElem);
+            }
+
+
+        </script>
+    </body>
+</html>
